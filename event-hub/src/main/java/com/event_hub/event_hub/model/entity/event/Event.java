@@ -1,5 +1,6 @@
-package com.event_hub.event_hub.model.entity.user;
+package com.event_hub.event_hub.model.entity.event;
 
+import com.event_hub.event_hub.model.entity.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

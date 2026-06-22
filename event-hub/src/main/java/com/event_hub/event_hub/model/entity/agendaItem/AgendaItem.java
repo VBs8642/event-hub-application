@@ -1,5 +1,6 @@
-package com.event_hub.event_hub.model.entity.user;
+package com.event_hub.event_hub.model.entity.agendaItem;
 
+import com.event_hub.event_hub.model.entity.event.Event;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,8 +13,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "registrations")
-public class Registration {
+@Table(name = "agenda_items")
+public class AgendaItem {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -22,10 +23,9 @@ public class Registration {
     @JoinColumn(name = "event_id")
     private Event event;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "attendee_id")
-    private User attendee;
-
-    private LocalDateTime registrationDate = LocalDateTime.now();
-    private int attendeesCount;
+    private String title;
+    private String description;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private int displayOrder;
 }
