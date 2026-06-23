@@ -1,5 +1,6 @@
 package com.event_hub.event_hub.model.entity.user;
 
+import com.event_hub.event_hub.model.dto.user.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -39,7 +40,7 @@ public class User {
     private String profilePicture;
 
     @Enumerated(EnumType.STRING)
-   // private Role role = Role.USER;
+    private UserRole role = UserRole.USER;
 
     private boolean active = true;
     private LocalDateTime createdAt = LocalDateTime.now();
