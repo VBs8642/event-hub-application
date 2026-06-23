@@ -1,5 +1,5 @@
 package com.event_hub.event_hub.repository.registration;
-
+import com.event_hub.event_hub.model.enums.RegistartionStatus;
 import com.event_hub.event_hub.model.entity.registration.Registration;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
