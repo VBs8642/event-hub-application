@@ -15,8 +15,6 @@ import java.util.UUID;
 @Setter
 @Getter
 @AllArgsConstructor
-
-@Table(name = "agenda_items")
 public class AgendaItemDto {
     @NotBlank(message = "Session workshop block title is required.")
     private String title;
