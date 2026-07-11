@@ -10,11 +10,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface RegistrationRepository extends JpaRepository<Registration, UUID> {
-    List<Registration> findByAttendeeIdAndStatus(UUID attendeeId, RegistrationStatus status);
+    List<Registration> findByUserUsernameOrderByBookingTimeDesc(String username);
+
     boolean existsByEventIdAndAttendeeIdAndStatus(UUID eventId, UUID attendeeId, RegistrationStatus status);
-    @Query("SELECT COALESCE(SUM(r.attendeesCount), 0) FROM Registration r " +
-            "WHERE r.event.id = :eventId AND r.status = 'CONFIRMED'")
-    int countCurrentAttendeesByEventId(@Param("eventId") UUID eventId);
+
+    @Query("SELECT COALESCE(SUM(r.attendeesCount), 0) FROM Registration r WHERE r.event.id = :eventId")
+    int countTicketsByEventId(@Param("eventId") UUID eventId);
 
 
     Optional<Registration> findByEventIdAndAttendeeId(UUID eventId, UUID attendeeId);
