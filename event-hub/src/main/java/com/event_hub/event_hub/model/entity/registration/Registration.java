@@ -1,5 +1,5 @@
 package com.event_hub.event_hub.model.entity.registration;
-
+import com.event_hub.event_hub.model.enums.RegistartionStatus;
 import com.event_hub.event_hub.model.entity.event.Event;
 import com.event_hub.event_hub.model.entity.user.User;
 import jakarta.persistence.*;
@@ -17,6 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "registrations")
 public class Registration {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "BINARY(16)")
