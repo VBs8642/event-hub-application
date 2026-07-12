@@ -1,6 +1,7 @@
 package com.event_hub.event_hub.service.user;
 
 import com.event_hub.event_hub.mapper.user.UserMapper;
+import com.event_hub.event_hub.model.dto.user.UserRegisterRequest;
 import com.event_hub.event_hub.model.entity.registration.Registration;
 import com.event_hub.event_hub.model.entity.user.User;
 import com.event_hub.event_hub.repository.user.UserRepository;
@@ -17,7 +18,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void registerUser(Registration registrationDto) {
+    public void registerUser(UserRegisterRequest registrationDto) {
         if (registrationDto == null) {
             throw new IllegalArgumentException("Registration data cannot be null.");
         }
