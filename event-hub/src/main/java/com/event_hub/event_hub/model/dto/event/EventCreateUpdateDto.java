@@ -1,10 +1,7 @@
 package com.event_hub.event_hub.model.dto.event;
 
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class EventCreateUpdateDto {
     @NotBlank(message = "Event title is required.")
     @Size(max = 100, message = "Title cannot exceed 100 characters.")
@@ -35,4 +33,6 @@ public class EventCreateUpdateDto {
     private LocalDateTime startDateTime;
     @NotNull(message = "End date and time are required.")
     private LocalDateTime endDateTime;
+
+
 }
