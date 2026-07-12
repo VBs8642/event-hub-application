@@ -9,4 +9,5 @@ public interface UserService {
     void registerUser(Registration registrationDto);
     User findByUsername(String username);
     User findById(UUID id);
+    User login(String username, String password);
 }
