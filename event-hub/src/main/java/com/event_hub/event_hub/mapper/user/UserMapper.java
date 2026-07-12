@@ -1,35 +1,23 @@
 package com.event_hub.event_hub.mapper.user;
 
+import com.event_hub.event_hub.model.dto.user.UserDto;
+import com.event_hub.event_hub.model.dto.user.UserRegisterRequest;
+import com.event_hub.event_hub.model.entity.user.User;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class UserMapper {
-    public class UserMapper {
-        if (userDto == null) {
-            return null;
-        }
-
-            return User.builder()
-                    .id(userDto.getId())
-                .username(userDto.getUsername())
-                .role(userDto.getRole())
-                .email(userDto.getEmail())
-                .build();
-    }
 
     public static User toUserEntity(UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
             return null;
         }
-
-
         return User.builder()
                 .username(userRegisterRequest.getUsername())
                 .password(userRegisterRequest.getPassword())
                 .email(userRegisterRequest.getEmail())
                 .firstName(userRegisterRequest.getFirstName())
                 .lastName(userRegisterRequest.getLastName())
-                .role(userRegisterRequest.getUserRole())
                 .build();
     }
 
@@ -42,8 +30,8 @@ public class UserMapper {
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
-                .firstName(user.getFirstName()) // Safely maps user metrics
-                .lastName(user.getLastName())   // Safely maps user metrics
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .role(user.getRole())
                 .build();
     }
