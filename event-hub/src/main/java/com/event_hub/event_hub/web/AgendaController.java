@@ -27,7 +27,7 @@ public class AgendaController {
         model.addAttribute("event", eventService.getEventDetails(eventId));
         model.addAttribute("agendaItems", agendaItemService.getAgendaByEvent(eventId));
         if (!model.containsAttribute("agendaDto")) {
-            model.addAttribute("agendaDto", new AgendaItemDto());
+            model.addAttribute("agendaDto", null);
         }
         return "events/agenda-manage";
     }

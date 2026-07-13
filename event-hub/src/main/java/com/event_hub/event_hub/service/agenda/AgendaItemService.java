@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface AgendaItemService {
-    AgendaItem addAgendaItem(UUID eventId, AgendaItemDto dto);
+    void addAgendaItem(UUID eventId, AgendaItemDto dto);
     List<AgendaItem> getAgendaByEvent(UUID eventId);
     void removeAgendaItem(UUID itemId);
 }

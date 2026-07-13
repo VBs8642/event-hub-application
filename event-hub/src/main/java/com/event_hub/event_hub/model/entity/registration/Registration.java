@@ -1,7 +1,8 @@
 package com.event_hub.event_hub.model.entity.registration;
-import com.event_hub.event_hub.model.enums.RegistartionStatus;
+
 import com.event_hub.event_hub.model.entity.event.Event;
 import com.event_hub.event_hub.model.entity.user.User;
+import com.event_hub.event_hub.model.enums.RegistrationStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.*;

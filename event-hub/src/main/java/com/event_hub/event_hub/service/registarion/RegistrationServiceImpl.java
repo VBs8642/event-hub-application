@@ -1,6 +1,8 @@
 package com.event_hub.event_hub.service.registarion;
 
+import com.event_hub.event_hub.model.entity.event.Event;
 import com.event_hub.event_hub.model.entity.registration.Registration;
+import com.event_hub.event_hub.model.entity.user.User;
 import com.event_hub.event_hub.repository.event.EventRepository;
 import com.event_hub.event_hub.repository.registration.RegistrationRepository;
 import com.event_hub.event_hub.repository.user.UserRepository;
@@ -53,7 +55,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     @Transactional
     public void cancelRegistration(UUID eventId, String username) {
-        Registration registration = registrationRepository.findByEventIdAndUserUsername(eventId, username)
+        Registration registration = registrationRepository.findByEventIdAndAttendeeUsername(eventId, username)
                 .orElseThrow(() -> new IllegalArgumentException("No registration record found for this event"));
 
         registrationRepository.delete(registration);
@@ -62,6 +64,6 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     @Transactional(readOnly = true)
     public List<Registration> getRegistrationsByUser(String username) {
-        return registrationRepository.findByUserUsernameOrderByBookingTimeDesc(username);
+        return registrationRepository.findByAttendeeUsernameOrderByRegistrationDateDesc(username);
     }
 }
