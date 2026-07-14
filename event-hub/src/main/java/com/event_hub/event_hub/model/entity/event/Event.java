@@ -1,5 +1,6 @@
 package com.event_hub.event_hub.model.entity.event;
 
+import com.event_hub.event_hub.model.entity.agendaItem.AgendaItem;
 import com.event_hub.event_hub.model.entity.user.User;
 import com.event_hub.event_hub.model.enums.EventStatus;
 import jakarta.persistence.*;
@@ -8,6 +9,8 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -51,10 +54,15 @@ public class Event {
     private LocalDateTime endDateTime;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
+    @Builder.Default
     private EventStatus status = EventStatus.DRAFT;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
+
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<AgendaItem> agendaItems = new ArrayList<>();
 
     public enum EventStatus {
         DRAFT,

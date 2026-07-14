@@ -33,6 +33,7 @@ public class Registration {
     private User attendee;
 
     @Column(name = "registration_date", nullable = false, updatable = false)
+    @Builder.Default
     private LocalDateTime registrationDate = LocalDateTime.now();
 
     @Min(1)
@@ -41,5 +42,6 @@ public class Registration {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
+    @Builder.Default
     private RegistrationStatus status = RegistrationStatus.CONFIRMED;
 }

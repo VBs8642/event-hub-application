@@ -97,8 +97,10 @@ public class EventController {
     public String updateEvent(@PathVariable UUID id,
                               @Valid @ModelAttribute("eventDto") EventCreateUpdateDto dto,
                               BindingResult bindingResult,
-                              HttpSession session) {
+                              HttpSession session,
+                              Model model) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("eventId", id);
             return "events/edit";
         }
 

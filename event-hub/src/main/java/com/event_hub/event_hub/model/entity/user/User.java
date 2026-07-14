@@ -40,9 +40,12 @@ public class User {
     private String profilePicture;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private UserRole role = UserRole.USER;
 
+    @Builder.Default
     private boolean active = true;
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
 

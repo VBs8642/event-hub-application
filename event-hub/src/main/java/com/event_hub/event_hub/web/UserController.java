@@ -26,6 +26,11 @@ public class UserController {
         return new UserRegisterRequest();
     }
 
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/events/catalog";
+    }
+
     @GetMapping("/register")
     public String showRegister() {
         return "register";
