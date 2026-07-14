@@ -2,9 +2,9 @@ package com.event_hub.event_hub.service.user;
 
 import com.event_hub.event_hub.mapper.user.UserMapper;
 import com.event_hub.event_hub.model.dto.user.UserRegisterRequest;
-import com.event_hub.event_hub.model.entity.registration.Registration;
 import com.event_hub.event_hub.model.entity.user.User;
 import com.event_hub.event_hub.repository.user.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -12,9 +12,11 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -29,6 +31,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Email address is already registered.");
         }
         User userEntity = UserMapper.toUserEntity(registrationDto);
+        userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
 
         userRepository.save(userEntity);
 
@@ -44,16 +47,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(UUID id) {
-        return null;
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
     }
     @Override
     public User login(String username, String password) {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password."));
-        if (!user.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("Invalid username or password.");
         }
         return user;
+    }
+
+    @Override
+    public User updateUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null.");
+        }
+        return userRepository.save(user);
     }
 }

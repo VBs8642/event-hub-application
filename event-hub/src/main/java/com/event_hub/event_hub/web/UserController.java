@@ -62,6 +62,7 @@ public class UserController {
             User user = userService.login(username, password);
 
             session.setAttribute("user", user.getUsername());
+            session.setAttribute("role", user.getRole().name());
             return "redirect:/events/catalog";
         } catch (IllegalArgumentException e) {
             return "redirect:/login?error=true";

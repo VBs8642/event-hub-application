@@ -11,4 +11,5 @@ public interface UserService {
     User findByUsername(String username);
     User findById(UUID id);
     User login(String username, String password);
+    User updateUser(User user);
 }
