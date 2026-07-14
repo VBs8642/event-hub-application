@@ -1,8 +1,10 @@
 package com.event_hub.event_hub.web;
 
 import com.event_hub.event_hub.model.dto.agendaItem.AgendaItemDto;
+import com.event_hub.event_hub.model.dto.user.UserRole;
 import com.event_hub.event_hub.service.agenda.AgendaItemService;
 import com.event_hub.event_hub.service.event.EventService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +25,11 @@ public class AgendaController {
     }
 
     @GetMapping("/manage/{eventId}")
-    public String manageAgenda(@PathVariable UUID eventId, Model model) {
+    public String manageAgenda(@PathVariable UUID eventId, Model model, HttpSession session) {
+        String role = (String) session.getAttribute("role");
+        if (!UserRole.ADMIN.name().equals(role) && !UserRole.ORGANIZER.name().equals(role)) {
+            return "redirect:/events/catalog?error=Unauthorized";
+        }
         model.addAttribute("event", eventService.getEventDetails(eventId));
         model.addAttribute("agendaItems", agendaItemService.getAgendaByEvent(eventId));
         if (!model.containsAttribute("agendaDto")) {
@@ -36,7 +42,12 @@ public class AgendaController {
     public String addAgendaItem(@PathVariable UUID eventId,
                                 @Valid @ModelAttribute("agendaDto") AgendaItemDto dto,
                                 BindingResult bindingResult,
-                                Model model) {
+                                Model model,
+                                HttpSession session) {
+        String role = (String) session.getAttribute("role");
+        if (!UserRole.ADMIN.name().equals(role) && !UserRole.ORGANIZER.name().equals(role)) {
+            return "redirect:/events/catalog?error=Unauthorized";
+        }
         if (bindingResult.hasErrors()) {
             model.addAttribute("event", eventService.getEventDetails(eventId));
             model.addAttribute("agendaItems", agendaItemService.getAgendaByEvent(eventId));
@@ -56,7 +67,11 @@ public class AgendaController {
     }
 
     @PostMapping("/remove/{itemId}/event/{eventId}")
-    public String removeAgendaItem(@PathVariable UUID itemId, @PathVariable UUID eventId) {
+    public String removeAgendaItem(@PathVariable UUID itemId, @PathVariable UUID eventId, HttpSession session) {
+        String role = (String) session.getAttribute("role");
+        if (!UserRole.ADMIN.name().equals(role) && !UserRole.ORGANIZER.name().equals(role)) {
+            return "redirect:/events/catalog?error=Unauthorized";
+        }
         agendaItemService.removeAgendaItem(itemId);
         return "redirect:/agenda/manage/" + eventId;
     }

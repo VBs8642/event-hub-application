@@ -29,7 +29,6 @@ public class EventCreateUpdateDto {
     @DecimalMin(value = "0.00", message = "Ticket price cannot be negative.")
     private BigDecimal ticketPrice;
     @NotNull(message = "Start date and time are required.")
-    @Future(message = "Start date must be in the future.")
     private LocalDateTime startDateTime;
     @NotNull(message = "End date and time are required.")
     private LocalDateTime endDateTime;

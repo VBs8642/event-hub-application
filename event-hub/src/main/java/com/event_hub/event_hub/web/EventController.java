@@ -34,14 +34,12 @@ public class EventController {
 
     @GetMapping("/{id}")
     public String showDetails(@PathVariable UUID id, Model model) {
-
-        Optional<Event> eventOptional = Optional.ofNullable(eventService.getEventDetails(id));
-
-        if (eventOptional.isEmpty()) {
+        try {
+            Event event = eventService.getEventDetails(id);
+            model.addAttribute("event", event);
+        } catch (IllegalArgumentException e) {
             return "redirect:/events/catalog?error=EventNotFound";
         }
-
-        model.addAttribute("event", eventOptional.get());
         return "events/details";
     }
 
