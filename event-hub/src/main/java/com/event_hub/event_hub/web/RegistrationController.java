@@ -1,10 +1,10 @@
 package com.event_hub.event_hub.web;
 import com.event_hub.event_hub.service.registarion.RegistrationService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.UUID;
 
 @Controller
@@ -19,10 +19,11 @@ public class RegistrationController {
     @PostMapping("/book")
     public String bookTickets(@RequestParam("eventId") UUID eventId,
                               @RequestParam("attendeesCount") int count,
-                              Principal principal,
+                              HttpSession session,
                               Model model) {
+        String username = (String) session.getAttribute("user");
         try {
-            registrationService.registerAttendee(eventId, principal.getName(), count);
+            registrationService.registerAttendee(eventId, username, count);
         } catch (IllegalStateException | IllegalArgumentException ex) {
             return "redirect:/events/" + eventId + "?error=" + ex.getMessage();
         }
@@ -30,14 +31,16 @@ public class RegistrationController {
     }
 
     @GetMapping("/my-tickets")
-    public String showUserTickets(Model model, Principal principal) {
-        model.addAttribute("bookings", registrationService.getRegistrationsByUser(principal.getName()));
+    public String showUserTickets(Model model, HttpSession session) {
+        String username = (String) session.getAttribute("user");
+        model.addAttribute("bookings", registrationService.getRegistrationsByUser(username));
         return "registrations/my-tickets";
     }
 
     @PostMapping("/cancel/{eventId}")
-    public String cancelBooking(@PathVariable UUID eventId, Principal principal) {
-        registrationService.cancelRegistration(eventId, principal.getName());
+    public String cancelBooking(@PathVariable UUID eventId, HttpSession session) {
+        String username = (String) session.getAttribute("user");
+        registrationService.cancelRegistration(eventId, username);
         return "redirect:/registrations/my-tickets";
     }
 }

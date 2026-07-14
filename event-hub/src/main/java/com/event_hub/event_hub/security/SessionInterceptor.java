@@ -36,7 +36,9 @@ public class SessionInterceptor implements HandlerInterceptor {
         // 2. Automatically seed the global view model with user context properties for Thymeleaf
         if (session != null && session.getAttribute("user") != null && modelAndView != null) {
             String loggedInUser = (String) session.getAttribute("user");
+            String userRole = (String) session.getAttribute("role");
             modelAndView.addObject("currentUser", loggedInUser);
+            modelAndView.addObject("currentUserRole", userRole);
         }
     }
 }
