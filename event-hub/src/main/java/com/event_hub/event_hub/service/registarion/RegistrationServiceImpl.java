@@ -3,6 +3,7 @@ package com.event_hub.event_hub.service.registarion;
 import com.event_hub.event_hub.model.entity.event.Event;
 import com.event_hub.event_hub.model.entity.registration.Registration;
 import com.event_hub.event_hub.model.entity.user.User;
+import com.event_hub.event_hub.model.enums.RegistrationStatus;
 import com.event_hub.event_hub.repository.event.EventRepository;
 import com.event_hub.event_hub.repository.registration.RegistrationRepository;
 import com.event_hub.event_hub.repository.user.UserRepository;
@@ -42,6 +43,13 @@ public class RegistrationServiceImpl implements RegistrationService {
                     + (event.getCapacity() - currentReservationsCount));
         }
 
+        // Business Rule: Prevent duplicate registration
+        boolean alreadyRegistered = registrationRepository.existsByEventIdAndAttendeeIdAndStatus(
+                eventId, user.getId(), RegistrationStatus.CONFIRMED);
+        if (alreadyRegistered) {
+            throw new IllegalStateException("You are already registered for this event.");
+        }
+
         Registration registration = Registration.builder()
                 .event(event)
                 .attendee(user)
@@ -58,7 +66,8 @@ public class RegistrationServiceImpl implements RegistrationService {
         Registration registration = registrationRepository.findByEventIdAndAttendeeUsername(eventId, username)
                 .orElseThrow(() -> new IllegalArgumentException("No registration record found for this event"));
 
-        registrationRepository.delete(registration);
+        registration.setStatus(RegistrationStatus.CANCELLED);
+        registrationRepository.save(registration);
     }
 
     @Override

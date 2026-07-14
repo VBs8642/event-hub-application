@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class EventMapper {
-    public static Event toEntity(Event dto) {
+    public static Event toEntity(EventCreateUpdateDto dto) {
         if (dto == null) {
             return null;
         }

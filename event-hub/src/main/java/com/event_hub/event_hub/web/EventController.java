@@ -1,5 +1,6 @@
 package com.event_hub.event_hub.web;
 
+import com.event_hub.event_hub.exception.ResourceOwnerException;
 import com.event_hub.event_hub.mapper.event.EventMapper;
 import com.event_hub.event_hub.model.dto.event.EventCreateUpdateDto;
 import com.event_hub.event_hub.model.entity.event.Event;
@@ -46,7 +47,7 @@ public class EventController {
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         if (!model.containsAttribute("eventDto")) {
-            model.addAttribute("eventDto", null);
+            model.addAttribute("eventDto", new EventCreateUpdateDto());
         }
         return "events/create";
     }
@@ -71,7 +72,7 @@ public class EventController {
             return "redirect:/events/dashboard?error=EventNotFound";
         }
 
-        Event dto = EventMapper.toEntity(eventOptional.get());
+        EventCreateUpdateDto dto = EventMapper.toDto(eventOptional.get());
 
         model.addAttribute("eventDto", dto);
         model.addAttribute("eventId", id);
@@ -89,7 +90,7 @@ public class EventController {
 
         try {
             eventService.updateEvent(id, dto, principal.getName());
-        } catch (IllegalArgumentException | IllegalStateException ex) {
+        } catch (IllegalArgumentException | IllegalStateException | ResourceOwnerException ex) {
             return "redirect:/events/dashboard?error=" + ex.getMessage();
         }
 
@@ -100,7 +101,7 @@ public class EventController {
     public String deleteEvent(@PathVariable UUID id, Principal principal) {
         try {
             eventService.deleteEvent(id, principal.getName());
-        } catch (IllegalArgumentException | IllegalStateException ex) {
+        } catch (IllegalArgumentException | IllegalStateException | ResourceOwnerException ex) {
             return "redirect:/events/dashboard?error=" + ex.getMessage();
         }
         return "redirect:/events/dashboard";

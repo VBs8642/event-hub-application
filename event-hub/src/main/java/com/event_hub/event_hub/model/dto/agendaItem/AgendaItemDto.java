@@ -33,6 +33,6 @@ public class AgendaItemDto {
     private LocalDateTime endTime;
 
     @Min(value = 1, message = "Sequence display sort ordering number index must equal 1 or higher.")
-    private int displayOrder;
+    private int displayOrder = 1;
 
 }
