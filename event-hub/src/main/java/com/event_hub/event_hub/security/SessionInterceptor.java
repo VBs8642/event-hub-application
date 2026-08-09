@@ -6,22 +6,23 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
 @Component
 public class SessionInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession(false);
 
-        // 1. Check if the user is authenticated via session variables
+
         if (session == null || session.getAttribute("user") == null) {
             String path = request.getRequestURI();
 
-            // Allow unauthenticated traffic to pass through registration, logins, and public static resources
+
             if (path.equals("/login") || path.equals("/register") || path.startsWith("/css") || path.startsWith("/js") || path.startsWith("/images")) {
                 return true;
             }
 
-            // Send unauthenticated users straight to the login endpoint
+
             response.sendRedirect("/login");
             return false;
         }
