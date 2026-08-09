@@ -4,13 +4,17 @@ import com.event_hub.event_hub.mapper.user.UserMapper;
 import com.event_hub.event_hub.model.dto.user.UserRegisterRequest;
 import com.event_hub.event_hub.model.entity.user.User;
 import com.event_hub.event_hub.repository.user.UserRepository;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -67,5 +71,11 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("User cannot be null.");
         }
         return userRepository.save(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        return null;
     }
 }
