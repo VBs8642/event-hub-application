@@ -57,22 +57,23 @@ public class UserController {
     public String showLogin() {
         return "login";
     }
+//    AuthenticationUserDetails is used for login
 
-    @PostMapping("/login")
-    public String handleLogin(@RequestParam String username,
-                              @RequestParam String password,
-                              HttpSession session,
-                              RedirectAttributes redirectAttributes) {
-        try {
-            User user = userService.login(username, password);
-
-            session.setAttribute("user", user.getUsername());
-            session.setAttribute("role", user.getRole().name());
-            return "redirect:/events/catalog";
-        } catch (IllegalArgumentException e) {
-            return "redirect:/login?error=true";
-        }
-    }
+//    @PostMapping("/login")
+//    public String handleLogin(@RequestParam String username,
+//                              @RequestParam String password,
+//                              HttpSession session,
+//                              RedirectAttributes redirectAttributes) {
+//        try {
+//            User user = userService.login(username, password);
+//
+//            session.setAttribute("user", user.getUsername());
+//            session.setAttribute("role", user.getRole().name());
+//            return "redirect:/events/catalog";
+//        } catch (IllegalArgumentException e) {
+//            return "redirect:/login?error=true";
+//        }
+//    }
 
     @PostMapping("/logout")
     public String handleLogout(HttpSession session) {
