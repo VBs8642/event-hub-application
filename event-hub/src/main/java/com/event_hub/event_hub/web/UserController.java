@@ -2,9 +2,11 @@ package com.event_hub.event_hub.web;
 
 import com.event_hub.event_hub.model.dto.user.UserRegisterRequest;
 import com.event_hub.event_hub.model.entity.user.User;
+import com.event_hub.event_hub.service.user.AuthenticationUserDetails;
 import com.event_hub.event_hub.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +29,13 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public String home() {
+    public String home(@AuthenticationPrincipal AuthenticationUserDetails principal) {
+
+        //AuthenticationUserDetails principal = (AuthenticationUserDetails) SecurityContextHolder
+        // .getContext().getAuthentication()
+        // .getPrincipal();
+
+
         return "redirect:/events/catalog";
     }
 
@@ -75,9 +83,10 @@ public class UserController {
 //        }
 //    }
 
-    @PostMapping("/logout")
-    public String handleLogout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/login?logout=true";
-    }
+//    @PostMapping("/logout")
+//    public String handleLogout(HttpSession session) {
+//        session.invalidate();
+//        return "redirect:/login?logout=true";
+//    }
+
 }

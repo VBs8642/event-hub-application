@@ -22,6 +22,8 @@ public class AuthenticationUserDetails implements UserDetails {
     private String username;
     private String password;
     private UserRole role;
+    //?? not in dto and entity and front-end
+    private boolean IsActive;
 
 
     @Override
@@ -37,5 +39,20 @@ public class AuthenticationUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return this.username;
+    }
+//?? switch role
+    @Override
+    public boolean isAccountNonExpired() {
+        return IsActive;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return IsActive;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return IsActive;
     }
 }
