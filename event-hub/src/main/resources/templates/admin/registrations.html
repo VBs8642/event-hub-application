@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('All Registrations - Admin')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold"><i class="fa-solid fa-shield-halved text-danger me-2"></i>Admin — All Registrations</h1>
+            <p class="text-muted">View every ticket booking across all events.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/users" class="btn btn-outline-secondary btn-sm">Users</a>
+            <a href="/users/events" class="btn btn-outline-secondary btn-sm">Events</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Attendee</th>
+                            <th>Event</th>
+                            <th>Tickets</th>
+                            <th>Registered</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="reg : ${registrations}">
+                            <td class="fw-semibold" th:text="${reg.attendee.username}">user</td>
+                            <td th:text="${reg.event.title}">Event</td>
+                            <td th:text="${reg.attendeesCount}">1</td>
+                            <td class="text-muted small"
+                                th:text="${#temporals.format(reg.registrationDate, 'dd MMM yyyy, HH:mm')}">Date</td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${reg.status.name() == 'CONFIRMED'} ? 'bg-success' : 'bg-secondary'"
+                                      th:text="${reg.status}">Status</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(registrations)}">
+                            <td colspan="5" class="text-center text-muted py-4">No registrations found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

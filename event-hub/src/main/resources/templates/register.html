@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Create Account - EventHub')}"></head>
+<body class="bg-light">
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container my-5 flex-grow-1 d-flex align-items-center justify-content-center">
+    <div class="card shadow border-0 p-4 w-100" style="max-width: 600px;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-dark">Join EventHub</h2>
+            <p class="text-muted small">Create a profile to host events or book attendee reservations</p>
+        </div>
+
+        <form th:action="@{/register}" th:object="${userRegisterDto}" method="post">
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold">First Name</label>
+                    <input type="text" th:field="*{firstName}" class="form-control" placeholder="John">
+                    <div class="validation-error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">Error</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small fw-semibold">Last Name</label>
+                    <input type="text" th:field="*{lastName}" class="form-control" placeholder="Doe">
+                    <div class="validation-error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">Error</div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small fw-semibold">Username</label>
+                <input type="text" th:field="*{username}" class="form-control" placeholder="johndoe123">
+                <div class="validation-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Error</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small fw-semibold">Email Address</label>
+                <input type="email" th:field="*{email}" class="form-control" placeholder="john@example.com">
+                <div class="validation-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label small fw-semibold">Password</label>
+                <input type="password" th:field="*{password}" class="form-control" placeholder="At least 6 characters">
+                <div class="validation-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Error</div>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 py-2 fw-semibold shadow-sm mb-3">Register Account</button>
+
+            <p class="text-center text-muted small mb-0">
+                Already a member? <a href="/login" class="text-decoration-none fw-semibold">Sign In</a>
+            </p>
+        </form>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

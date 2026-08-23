@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Profile - EventHub')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h2 class="fw-bold text-dark mb-2">My Profile</h2>
+                    <p class="text-muted small mb-4">Manage your account information.</p>
+
+                    <div th:if="${successMessage}" class="alert alert-success text-center small py-2 mb-3" th:text="${successMessage}"></div>
+                    <div th:if="${errorMessage}" class="alert alert-danger text-center small py-2 mb-3" th:text="${errorMessage}"></div>
+
+                    <form th:action="@{/profile}" method="post">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">First Name</label>
+                                <input type="text" name="firstName" class="form-control" th:value="${user.firstName}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Last Name</label>
+                                <input type="text" name="lastName" class="form-control" th:value="${user.lastName}" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Email Address</label>
+                            <input type="email" name="email" class="form-control" th:value="${user.email}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Profile Picture URL (optional)</label>
+                            <input type="text" name="profilePicture" class="form-control" th:value="${user.profilePicture}" placeholder="https://example.com/photo.jpg">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-semibold">Username</label>
+                            <input type="text" class="form-control" th:value="${user.username}" disabled>
+                            <div class="form-text">Username cannot be changed.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-semibold">Role</label>
+                            <input type="text" class="form-control" th:value="${user.role}" disabled>
+                            <div class="form-text">Contact an admin to change your role.</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
