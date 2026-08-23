@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import javax.management.relation.Role;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

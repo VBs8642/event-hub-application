@@ -9,4 +9,5 @@ public interface RegistrationService {
     Registration registerAttendee(UUID eventId, String username, int ticketsRequested);
     void cancelRegistration(UUID eventId, String username);
     List<Registration> getRegistrationsByUser(String username);
+    List<Registration> getAllRegistrations();
 }

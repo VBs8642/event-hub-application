@@ -4,7 +4,6 @@ import com.event_hub.event_hub.model.dto.user.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,17 +21,16 @@ public class AuthenticationUserDetails implements UserDetails {
     private String username;
     private String password;
     private UserRole role;
-    //?? not in dto and entity and front-end
-    private boolean IsActive;
-
+    @Builder.Default
+    private boolean active = true;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("Role_" + role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
-    public @Nullable String getPassword() {
+    public String getPassword() {
         return this.password;
     }
 
@@ -40,19 +38,24 @@ public class AuthenticationUserDetails implements UserDetails {
     public String getUsername() {
         return this.username;
     }
-//?? switch role
+
+    @Override
+    public boolean isEnabled() {
+        return active;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
-        return IsActive;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return IsActive;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return IsActive;
+        return true;
     }
 }

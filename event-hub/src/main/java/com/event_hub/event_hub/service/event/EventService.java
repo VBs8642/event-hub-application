@@ -8,9 +8,10 @@ import java.util.UUID;
 
 public interface EventService {
     Event createEvent(EventCreateUpdateDto dto, String username);
-    Event updateEvent(UUID eventId, EventCreateUpdateDto dto, String username);
-    void deleteEvent(UUID eventId, String username);
+    Event updateEvent(UUID eventId, EventCreateUpdateDto dto, String requestingUsername);
+    void deleteEvent(UUID eventId, String requestingUsername);
     Event getEventDetails(UUID id);
     List<Event> getPublicCatalog();
     List<Event> getEventsByCreator(String username);
+    List<Event> getAllEvents();
 }

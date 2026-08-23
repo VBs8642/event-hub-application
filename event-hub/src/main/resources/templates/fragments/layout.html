@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:fragment="head(title)">
     <meta charset="UTF-8">
@@ -44,19 +45,24 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/events/catalog">Explore Events</a>
                 </li>
-                <li class="nav-item" th:if="${session.user != null}">
+                <li class="nav-item" sec:authorize="isAuthenticated()">
                     <a class="nav-link" href="/registrations/my-tickets">My Tickets</a>
                 </li>
-                <li class="nav-item" th:if="${session.user != null and (session.role == 'ADMIN' or session.role == 'ORGANIZER')}">
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'ORGANIZER')">
                     <a class="nav-link" href="/events/dashboard">Dashboard</a>
                 </li>
-                <li class="nav-item" th:if="${session.user != null}">
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" href="/users">
+                        <i class="fa-solid fa-shield-halved me-1"></i>Admin
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
                     <a class="nav-link" href="/profile">Profile</a>
                 </li>
-                <li class="nav-item ms-lg-2" th:if="${session.user == null}">
+                <li class="nav-item ms-lg-2" sec:authorize="isAnonymous()">
                     <a class="btn btn-sm btn-outline-light px-3" href="/login">Sign In</a>
                 </li>
-                <li class="nav-item ms-lg-2" th:if="${session.user != null}">
+                <li class="nav-item ms-lg-2" sec:authorize="isAuthenticated()">
                     <form th:action="@{/logout}" method="post" class="d-inline">
                         <button type="submit" class="btn btn-sm btn-outline-light px-3">Sign Out</button>
                     </form>

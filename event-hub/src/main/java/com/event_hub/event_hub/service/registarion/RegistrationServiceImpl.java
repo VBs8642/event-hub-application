@@ -75,4 +75,10 @@ public class RegistrationServiceImpl implements RegistrationService {
     public List<Registration> getRegistrationsByUser(String username) {
         return registrationRepository.findByAttendeeUsernameOrderByRegistrationDateDesc(username);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Registration> getAllRegistrations() {
+        return registrationRepository.findAll();
+    }
 }

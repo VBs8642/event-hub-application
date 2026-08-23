@@ -2,6 +2,7 @@ package com.event_hub.event_hub.service.event;
 
 import com.event_hub.event_hub.exception.ResourceOwnerException;
 import com.event_hub.event_hub.model.dto.event.EventCreateUpdateDto;
+import com.event_hub.event_hub.model.dto.user.UserRole;
 import com.event_hub.event_hub.model.entity.event.Event;
 import com.event_hub.event_hub.model.entity.user.User;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class EventServiceImpl implements EventService {
                 .ticketPrice(dto.getTicketPrice())
                 .startDateTime(dto.getStartDateTime())
                 .endDateTime(dto.getEndDateTime())
-                .creator(creator) // Clean mapping directly to your User entity
+                .creator(creator)
                 .build();
 
         return eventRepository.save(event);
@@ -54,11 +55,15 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public Event updateEvent(UUID eventId, EventCreateUpdateDto dto, String username) {
+    public Event updateEvent(UUID eventId, EventCreateUpdateDto dto, String requestingUsername) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Requested event record not found."));
 
-        if (!event.getCreator().getUsername().equals(username)) {
+        User requester = userRepository.findByUsername(requestingUsername)
+                .orElseThrow(() -> new IllegalArgumentException("Authenticated user context not found."));
+
+        boolean isAdmin = requester.getRole() == UserRole.ADMIN;
+        if (!isAdmin && !event.getCreator().getUsername().equals(requestingUsername)) {
             throw new ResourceOwnerException("Unauthorized action. You are not the creator of this event.");
         }
 
@@ -81,11 +86,15 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public void deleteEvent(UUID eventId, String username) {
+    public void deleteEvent(UUID eventId, String requestingUsername) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Requested event record not found."));
 
-        if (!event.getCreator().getUsername().equals(username)) {
+        User requester = userRepository.findByUsername(requestingUsername)
+                .orElseThrow(() -> new IllegalArgumentException("Authenticated user context not found."));
+
+        boolean isAdmin = requester.getRole() == UserRole.ADMIN;
+        if (!isAdmin && !event.getCreator().getUsername().equals(requestingUsername)) {
             throw new ResourceOwnerException("Unauthorized action. You are not the creator of this event.");
         }
 
@@ -110,7 +119,12 @@ public class EventServiceImpl implements EventService {
     public List<Event> getEventsByCreator(String username) {
         User creator = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User context not found."));
-
         return eventRepository.findByCreatorIdOrderByStartDateTimeDesc(creator.getId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Event> getAllEvents() {
+        return eventRepository.findAll();
     }
 }

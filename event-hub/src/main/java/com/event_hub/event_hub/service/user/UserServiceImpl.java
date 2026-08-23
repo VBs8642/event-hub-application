@@ -2,6 +2,7 @@ package com.event_hub.event_hub.service.user;
 
 import com.event_hub.event_hub.mapper.user.UserMapper;
 import com.event_hub.event_hub.model.dto.user.UserRegisterRequest;
+import com.event_hub.event_hub.model.dto.user.UserRole;
 import com.event_hub.event_hub.model.entity.user.User;
 import com.event_hub.event_hub.repository.user.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,11 +10,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
-        //, UserDetailsData {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -36,12 +37,8 @@ public class UserServiceImpl implements UserService {
         }
         User userEntity = UserMapper.toUserEntity(registrationDto);
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
-
         userRepository.save(userEntity);
-
     }
-
-
 
     @Override
     public User findByUsername(String username) {
@@ -54,16 +51,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
     }
-//    @Override
-//    public User login(String username, String password) {
-//
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password."));
-//        if (!passwordEncoder.matches(password, user.getPassword())) {
-//            throw new IllegalArgumentException("Invalid username or password.");
-//        }
-//        return user;
-//    }
 
     @Override
     public User updateUser(User user) {
@@ -74,16 +61,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public void changeUserRole(UUID userId, UserRole newRole) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+        user.setRole(newRole);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void toggleUserStatus(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+        user.setActive(!user.isActive());
+        userRepository.save(user);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
-
 
         return AuthenticationUserDetails.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .role(user.getRole())
+                .active(user.isActive())
                 .build();
     }
 }

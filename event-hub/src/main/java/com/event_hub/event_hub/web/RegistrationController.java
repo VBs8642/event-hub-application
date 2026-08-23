@@ -1,6 +1,9 @@
 package com.event_hub.event_hub.web;
+
 import com.event_hub.event_hub.service.registarion.RegistrationService;
-import jakarta.servlet.http.HttpSession;
+import com.event_hub.event_hub.service.user.AuthenticationUserDetails;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +12,7 @@ import java.util.UUID;
 
 @Controller
 @RequestMapping("/registrations")
+@PreAuthorize("isAuthenticated()")
 public class RegistrationController {
     private final RegistrationService registrationService;
 
@@ -19,11 +23,10 @@ public class RegistrationController {
     @PostMapping("/book")
     public String bookTickets(@RequestParam("eventId") UUID eventId,
                               @RequestParam("attendeesCount") int count,
-                              HttpSession session,
+                              @AuthenticationPrincipal AuthenticationUserDetails principal,
                               Model model) {
-        String username = (String) session.getAttribute("user");
         try {
-            registrationService.registerAttendee(eventId, username, count);
+            registrationService.registerAttendee(eventId, principal.getUsername(), count);
         } catch (IllegalStateException | IllegalArgumentException ex) {
             return "redirect:/events/" + eventId + "?error=" + ex.getMessage();
         }
@@ -31,16 +34,15 @@ public class RegistrationController {
     }
 
     @GetMapping("/my-tickets")
-    public String showUserTickets(Model model, HttpSession session) {
-        String username = (String) session.getAttribute("user");
-        model.addAttribute("bookings", registrationService.getRegistrationsByUser(username));
+    public String showUserTickets(Model model, @AuthenticationPrincipal AuthenticationUserDetails principal) {
+        model.addAttribute("bookings", registrationService.getRegistrationsByUser(principal.getUsername()));
         return "registrations/my-tickets";
     }
 
     @PostMapping("/cancel/{eventId}")
-    public String cancelBooking(@PathVariable UUID eventId, HttpSession session) {
-        String username = (String) session.getAttribute("user");
-        registrationService.cancelRegistration(eventId, username);
+    public String cancelBooking(@PathVariable UUID eventId,
+                                @AuthenticationPrincipal AuthenticationUserDetails principal) {
+        registrationService.cancelRegistration(eventId, principal.getUsername());
         return "redirect:/registrations/my-tickets";
     }
 }
