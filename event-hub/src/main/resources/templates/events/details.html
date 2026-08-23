@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${event.title} + ' - EventHub')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container my-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <img th:src="${#strings.isEmpty(event.imageUrl) ? 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=1200' : event.imageUrl}"
+                     class="card-img-top object-fit-cover" style="height: 350px;" alt="Event Banner">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h1 class="fw-bold text-dark mb-2" th:text="${event.title}">Event Title</h1>
+                            <p class="text-muted mb-0">
+                                Organized by <strong th:text="${event.creator.firstName} + ' ' + ${event.creator.lastName}">Creator</strong>
+                            </p>
+                        </div>
+                        <span class="badge bg-success-subtle text-success border border-success fs-6"
+                              th:text="${event.status}">DRAFT</span>
+                    </div>
+
+                    <hr>
+
+                    <div class="row my-4">
+                        <div class="col-md-6 mb-3">
+                            <p class="fw-semibold text-dark mb-1"><i class="fa-solid fa-location-dot text-success me-2"></i>Venue</p>
+                            <p class="text-muted mb-0" th:text="${event.venue} + ', ' + ${event.city}">Location</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <p class="fw-semibold text-dark mb-1"><i class="fa-solid fa-calendar-days text-success me-2"></i>Date & Time</p>
+                            <p class="text-muted mb-0">
+                                <span th:text="${#temporals.format(event.startDateTime, 'dd MMM yyyy, HH:mm')}">Start</span>
+                                -
+                                <span th:text="${#temporals.format(event.endDateTime, 'dd MMM yyyy, HH:mm')}">End</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <p class="fw-semibold text-dark mb-1"><i class="fa-solid fa-ticket text-success me-2"></i>Ticket Price</p>
+                            <p class="text-muted mb-0" th:text="'$' + ${#numbers.formatDecimal(event.ticketPrice, 1, 2)}">$0.00</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <p class="fw-semibold text-dark mb-1"><i class="fa-solid fa-users text-success me-2"></i>Capacity</p>
+                            <p class="text-muted mb-0" th:text="${event.capacity} + ' seats'">0 seats</p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h5 class="fw-bold text-dark mb-3">About This Event</h5>
+                    <p class="text-muted" th:text="${event.description}">Description</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Book Tickets: authenticated users only -->
+            <div class="card shadow-sm border-0 mb-4" sec:authorize="isAuthenticated()">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-dark mb-3">Book Tickets</h5>
+                    <form th:action="@{/registrations/book}" method="post">
+                        <input type="hidden" name="eventId" th:value="${event.id}">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Number of Passes</label>
+                            <input type="number" name="attendeesCount" class="form-control" value="1" min="1" th:max="${event.capacity}">
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 py-2 fw-semibold shadow-sm">Register Now</button>
+                    </form>
+                </div>
+            </div>
+            <!-- Sign-in prompt for guests -->
+            <div class="card shadow-sm border-0 mb-4" sec:authorize="isAnonymous()">
+                <div class="card-body p-4 text-center">
+                    <h5 class="fw-bold text-dark mb-3">Book Tickets</h5>
+                    <p class="text-muted small mb-3">Sign in to register for this event.</p>
+                    <a href="/login" class="btn btn-primary w-100 py-2 fw-semibold">Sign In to Register</a>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-dark mb-3">Event Agenda</h5>
+                    <div th:if="${event.agendaItems != null and !event.agendaItems.isEmpty()}">
+                        <div class="mb-3" th:each="item : ${event.agendaItems}">
+                            <h6 class="fw-bold mb-1" th:text="${item.title}">Session Title</h6>
+                            <small class="text-muted">
+                                <span th:text="${item.speaker}">Speaker</span> |
+                                <span th:text="${#temporals.format(item.startTime, 'HH:mm')}">Start</span> -
+                                <span th:text="${#temporals.format(item.endTime, 'HH:mm')}">End</span>
+                            </small>
+                        </div>
+                    </div>
+                    <div th:unless="${event.agendaItems != null and !event.agendaItems.isEmpty()}" class="text-muted small">
+                        No agenda items published yet.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Manage Agenda - ' + ${event.title})}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<main class="container my-5">
+    <div class="mb-4">
+        <h1 class="fw-bold">Manage Agenda</h1>
+        <p class="text-muted">Add, reorder, or remove sessions for <strong th:text="${event.title}">Event</strong></p>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger text-center small py-2 mb-3" th:text="${errorMessage}"></div>
+
+    <div class="row">
+        <div class="col-lg-5 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">Add New Session</h5>
+                    <form th:action="@{/agenda/add/{eventId}(eventId=${event.id})}" th:object="${agendaDto}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Session Title</label>
+                            <input type="text" th:field="*{title}" class="form-control" placeholder="e.g. Opening Keynote">
+                            <div class="validation-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Speaker</label>
+                            <input type="text" th:field="*{speaker}" class="form-control" placeholder="e.g. Jane Doe">
+                            <div class="validation-error" th:if="${#fields.hasErrors('speaker')}" th:errors="*{speaker}">Error</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Description</label>
+                            <textarea th:field="*{description}" class="form-control" rows="3" placeholder="Session overview..."></textarea>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">Start Time</label>
+                                <input type="datetime-local" th:field="*{startTime}" class="form-control">
+                                <div class="validation-error" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}">Error</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold">End Time</label>
+                                <input type="datetime-local" th:field="*{endTime}" class="form-control">
+                                <div class="validation-error" th:if="${#fields.hasErrors('endTime')}" th:errors="*{endTime}">Error</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Display Order</label>
+                            <input type="number" th:field="*{displayOrder}" class="form-control" min="1">
+                            <div class="validation-error" th:if="${#fields.hasErrors('displayOrder')}" th:errors="*{displayOrder}">Error</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 py-2 fw-semibold shadow-sm">Add Session</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">Current Agenda</h5>
+
+                    <div th:if="${#lists.isEmpty(agendaItems)}" class="text-center py-4 text-muted">
+                        <p>No sessions have been added yet.</p>
+                    </div>
+
+                    <div th:unless="${#lists.isEmpty(agendaItems)}">
+                        <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded"
+                             th:each="item : ${agendaItems}">
+                            <div>
+                                <h6 class="fw-bold mb-1" th:text="${item.title}">Session Title</h6>
+                                <small class="text-muted">
+                                    <span th:text="${item.speaker}">Speaker</span> |
+                                    <span th:text="${#temporals.format(item.startTime, 'dd MMM, HH:mm')}">Start</span> -
+                                    <span th:text="${#temporals.format(item.endTime, 'HH:mm')}">End</span>
+                                </small>
+                                <p class="mb-0 mt-1 small text-secondary" th:text="${item.description}">Description</p>
+                            </div>
+                            <form th:action="@{/agenda/remove/{itemId}/event/{eventId}(itemId=${item.id}, eventId=${event.id})}" method="post"
+                                  onsubmit="return confirm('Remove this session?');">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
