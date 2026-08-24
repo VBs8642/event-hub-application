@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Settings - EventHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .settings-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .settings-title {
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        .preference-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+        }
+        .preference-label {
+            font-weight: 500;
+            color: #333;
+        }
+        .preference-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            display: none;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #28a745;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Fragment -->
+    <div th:replace="fragments/layout :: navbar"></div>
+
+    <div class="container">
+        <div class="settings-container">
+            <h1 class="settings-title">📬 Notification Preferences</h1>
+
+            <!-- Success Message -->
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>✓ Success!</strong> <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Error Message -->
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>✗ Error!</strong> <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <form method="post" class="settings-form">
+                <p class="text-muted mb-4">Manage how you receive event notifications and updates</p>
+
+                <!-- Email Notifications -->
+                <div class="preference-item">
+                    <div>
+                        <div class="preference-label">📧 Email Notifications</div>
+                        <div class="preference-description">Receive event updates and announcements via email</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="emailEnabled" 
+                               th:checked="${preferences != null and preferences.emailEnabled}">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- SMS Notifications -->
+                <div class="preference-item">
+                    <div>
+                        <div class="preference-label">💬 SMS Notifications</div>
+                        <div class="preference-description">Receive important alerts via text message</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="smsEnabled" 
+                               th:checked="${preferences != null and preferences.smsEnabled}">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- App Alerts -->
+                <div class="preference-item">
+                    <div>
+                        <div class="preference-label">🔔 App Alerts</div>
+                        <div class="preference-description">Get in-app popup notifications</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="appAlertsEnabled" 
+                               th:checked="${preferences != null and preferences.appAlertsEnabled}">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Push Notifications -->
+                <div class="preference-item">
+                    <div>
+                        <div class="preference-label">📱 Push Notifications</div>
+                        <div class="preference-description">Receive browser push notifications</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="pushNotificationEnabled" 
+                               th:checked="${preferences != null and preferences.pushNotificationEnabled}">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-success btn-lg flex-grow-1">
+                        ✓ Save Preferences
+                    </button>
+                    <a href="/profile" class="btn btn-secondary btn-lg">
+                        Back to Profile
+                    </a>
+                </div>
+            </form>
+
+            <hr class="my-4">
+            <p class="text-muted small">
+                💡 <strong>Note:</strong> Your preferences are stored securely and can be updated at any time.
+                Event organizers will use these preferences when broadcasting announcements.
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-hide alerts after 5 seconds
+        document.querySelectorAll('.alert').forEach(alert => {
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
