@@ -1,6 +1,7 @@
 package com.event_hub.notification.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.UUID;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UserNotificationPreferenceRequest {
     @JsonProperty("user_id")
+    @NotNull(message = "User ID is required.")
     private UUID userId;
 
     @JsonProperty("email_enabled")

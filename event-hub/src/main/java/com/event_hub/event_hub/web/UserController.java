@@ -54,8 +54,12 @@ public class UserController {
 
         try {
             userService.registerUser(registrationDto);
+            redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Please login.");
             return "redirect:/login";
         } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/register";
+        } catch (BusinessException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/register";
         }
