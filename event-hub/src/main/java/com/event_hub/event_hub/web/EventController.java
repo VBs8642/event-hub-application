@@ -2,8 +2,12 @@ package com.event_hub.event_hub.web;
 
 import com.event_hub.event_hub.client.BroadcastAnnouncementRequest;
 import com.event_hub.event_hub.client.NotificationClient;
+import com.event_hub.event_hub.exception.BusinessException;
+import com.event_hub.event_hub.exception.ResourceNotFoundException;
 import com.event_hub.event_hub.exception.ResourceOwnerException;
+import com.event_hub.event_hub.exception.UnauthorizedAccessException;
 import com.event_hub.event_hub.mapper.event.EventMapper;
+import com.event_hub.event_hub.model.dto.event.AnnouncementRequest;
 import com.event_hub.event_hub.model.dto.event.EventCreateUpdateDto;
 import com.event_hub.event_hub.model.dto.user.UserRole;
 import com.event_hub.event_hub.model.entity.event.Event;
@@ -12,6 +16,7 @@ import com.event_hub.event_hub.service.event.EventService;
 import com.event_hub.event_hub.service.registarion.RegistrationService;
 import com.event_hub.event_hub.service.user.AuthenticationUserDetails;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Controller
 @RequestMapping("/events")
 public class EventController {
@@ -48,8 +54,11 @@ public class EventController {
     public String showDetails(@PathVariable UUID id, Model model) {
         try {
             Event event = eventService.getEventDetails(id);
+            if (event == null) {
+                throw new ResourceNotFoundException("Event not found with ID: " + id);
+            }
             model.addAttribute("event", event);
-        } catch (IllegalArgumentException e) {
+        } catch (ResourceNotFoundException e) {
             return "redirect:/events/catalog?error=EventNotFound";
         }
         return "events/details";
@@ -101,7 +110,11 @@ public class EventController {
         }
         try {
             eventService.updateEvent(id, dto, principal.getUsername());
-        } catch (IllegalArgumentException | IllegalStateException | ResourceOwnerException ex) {
+        } catch (ResourceOwnerException ex) {
+            return "redirect:/events/dashboard?error=Unauthorized";
+        } catch (ResourceNotFoundException ex) {
+            return "redirect:/events/dashboard?error=EventNotFound";
+        } catch (BusinessException ex) {
             return "redirect:/events/dashboard?error=" + ex.getMessage();
         }
         return "redirect:/events/dashboard";
@@ -113,7 +126,11 @@ public class EventController {
                               @AuthenticationPrincipal AuthenticationUserDetails principal) {
         try {
             eventService.deleteEvent(id, principal.getUsername());
-        } catch (IllegalArgumentException | IllegalStateException | ResourceOwnerException ex) {
+        } catch (ResourceOwnerException ex) {
+            return "redirect:/events/dashboard?error=Unauthorized";
+        } catch (ResourceNotFoundException ex) {
+            return "redirect:/events/dashboard?error=EventNotFound";
+        } catch (BusinessException ex) {
             return "redirect:/events/dashboard?error=" + ex.getMessage();
         }
         return "redirect:/events/dashboard";
@@ -134,17 +151,19 @@ public class EventController {
     @PreAuthorize("hasAnyRole('ORGANIZER', 'ADMIN')")
     public ResponseEntity<String> broadcastAnnouncement(
             @PathVariable UUID eventId,
-            @RequestParam String title,
-            @RequestParam String content,
+            @Valid @RequestBody AnnouncementRequest announcementRequest,
             @AuthenticationPrincipal AuthenticationUserDetails principal) {
         try {
+            log.info("📢 Broadcasting announcement for event: {}", eventId);
             Event event = eventService.getEventDetails(eventId);
             
-
-            if (principal.getRole() != UserRole.ADMIN && !event.getCreator().getUsername().equals(principal.getUsername())) {
-                return ResponseEntity.status(403).body("Unauthorized");
+            if (event == null) {
+                throw new ResourceNotFoundException("Event not found with ID: " + eventId);
             }
 
+            if (principal.getRole() != UserRole.ADMIN && !event.getCreator().getUsername().equals(principal.getUsername())) {
+                throw new UnauthorizedAccessException("You are not authorized to send announcements for this event");
+            }
 
             List<Registration> registrations = registrationService.getAllRegistrations();
             List<UUID> recipientUserIds = registrations.stream()
@@ -152,18 +171,29 @@ public class EventController {
                     .map(r -> r.getAttendee().getId())
                     .toList();
 
+            if (recipientUserIds.isEmpty()) {
+                log.warn("⚠️ No recipients found for event: {}", eventId);
+                return ResponseEntity.ok("Announcement sent to 0 attendees");
+            }
 
             BroadcastAnnouncementRequest request = new BroadcastAnnouncementRequest();
             request.setEventId(eventId);
-            request.setTitle(title);
-            request.setContent(content);
+            request.setTitle(announcementRequest.getTitle());
+            request.setContent(announcementRequest.getContent());
             request.setRecipientUserIds(recipientUserIds);
 
             ResponseEntity<?> response = notificationClient.broadcastAnnouncement(request);
+            log.info("✅ Announcement broadcast completed. Recipients: {}", recipientUserIds.size());
             return ResponseEntity.ok("Announcement sent to " + recipientUserIds.size() + " attendees");
+        } catch (ResourceNotFoundException ex) {
+            log.warn("🔍 Event not found: {}", eventId);
+            return ResponseEntity.status(404).body("Event not found");
+        } catch (UnauthorizedAccessException ex) {
+            log.warn("🚫 Unauthorized announcement attempt: {}", ex.getMessage());
+            return ResponseEntity.status(403).body("Unauthorized");
         } catch (Exception e) {
+            log.error("💥 Failed to send announcement: {}", e.getMessage());
             return ResponseEntity.status(500).body("Failed to send announcement: " + e.getMessage());
         }
     }
-}
 
